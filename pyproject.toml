@@ -1,0 +1,14 @@
+[tool.poetry]
+name = "calorietrackermodel"
+version = "0.1.0"
+description = ""
+authors = ["BorisBruijstens <127401395+Boris2004@users.noreply.github.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
