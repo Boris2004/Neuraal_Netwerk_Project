@@ -4,6 +4,7 @@ import os
 
 def authorize():
     try:
+        orginele_dir = os.getcwdb()
         os.chdir("Google_drive")
         
         gauth = GoogleAuth()
@@ -22,6 +23,7 @@ def authorize():
         gauth.SaveCredentialsFile("credentials.txt")
         drive = GoogleDrive(gauth)
         print("Succesvol verbonden met Google Drive!")
+        os.chdir(orginele_dir) #Directory terugzetten naar originele
         return drive
     except Exception as e:
         print(f"Fout bij autorisatie: {e}")
