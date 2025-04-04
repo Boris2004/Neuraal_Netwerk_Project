@@ -6,7 +6,10 @@ def authorize():
     try:        
         gauth = GoogleAuth()
         gauth.LoadCredentialsFile("Google_drive/credentials.json")
-        
+        orginele_dir = os.getcwd()
+
+        os.chdir("Google_drive")
+
         if gauth.credentials is None:
             print("Geen credentials gevonden. Opnieuw inloggen vereist...")
             gauth.LocalWebserverAuth()
@@ -16,7 +19,8 @@ def authorize():
         else:
             print("Credentials gevonden. Autorisatie succesvol.")
             gauth.Authorize()
-        
+            
+        os.chdir(orginele_dir)
         gauth.SaveCredentialsFile("Google_drive/credentials.json")
         drive = GoogleDrive(gauth)
         print("Succesvol verbonden met Google Drive!")
