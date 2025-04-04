@@ -3,9 +3,7 @@ from pydrive2.drive import GoogleDrive
 import os
 
 def authorize():
-    try:
-        orginele_dir = os.getcwdb()
-        
+    try:        
         gauth = GoogleAuth()
         gauth.LoadCredentialsFile("Google_drive/credentials.json")
         
@@ -23,6 +21,7 @@ def authorize():
         drive = GoogleDrive(gauth)
         print("Succesvol verbonden met Google Drive!")
         return drive
+    
     except Exception as e:
         print(f"Fout bij autorisatie: {e}")
         raise
@@ -33,7 +32,17 @@ def upload_naar_drive(drive, path, remote_name=None):
             raise Exception(f"Bestand '{path}' bestaat niet.")
         
         file_name = remote_name if remote_name else os.path.basename(path)
-        file = drive.CreateFile({'title': file_name})
+        folder_id = "1xx9r2EV8LmGnn0XgrRA_Vr-xRjhoN_XI"
+        query = f"title = '{file_name}' and trashed = false and '{folder_id}' in parents"
+        
+        file_list = drive.ListFile({'q': query}).GetList()
+        
+        if file_list:
+            file = file_list[0]
+            print(f"Bestand '{file_name}' bestaat al. Bestand wordt overschreven...")
+        else:
+            file = drive.CreateFile({'title': file_name, 
+                                 'parents': [{'id': folder_id}]})
         file.SetContentFile(path)
         file.Upload()
         
