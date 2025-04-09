@@ -6,10 +6,7 @@ def authorize():
     try:        
         gauth = GoogleAuth()
         gauth.LoadCredentialsFile("Google_drive/credentials.json")
-        orginele_dir = os.getcwd()
-
-        os.chdir("Google_drive")
-
+        
         if gauth.credentials is None:
             print("Geen credentials gevonden. Opnieuw inloggen vereist...")
             gauth.LocalWebserverAuth()
@@ -20,7 +17,6 @@ def authorize():
             print("Credentials gevonden. Autorisatie succesvol.")
             gauth.Authorize()
             
-        os.chdir(orginele_dir)
         gauth.SaveCredentialsFile("Google_drive/credentials.json")
         drive = GoogleDrive(gauth)
         print("Succesvol verbonden met Google Drive!")
@@ -56,16 +52,20 @@ def upload_naar_drive(drive, path, remote_name=None):
         print(f"Fout opgetreden bij uploaden: {e}")
         raise
         
-def download_bestand(drive, file_id, path):
+def download_bestand(drive, file_name):
     try:
-        file = drive.CreateFile({'id': file_id})
-        file.GetContentFile(path)
+        folder_id = "1xx9r2EV8LmGnn0XgrRA_Vr-xRjhoN_XI"
+        query = f"title = '{file_name}' and trashed = false and '{folder_id}' in parents"
+        file_list = drive.ListFile({'q': query}).GetList()
         
-        if os.path.exists(path):
-            print(f"Bestand succesvol gedownload naar: {path}")
-        else:
-            raise(Exception(f"Path '{path}' niet gevonden."))
-            
+        if not file_list:
+            raise Exception(f"Geen bestand gevonden met naam '{file_name}' in Google Drive.")
+        
+        print(f"Bestand '{file_name}' gevonden! Wordt gedownload naar geheugen...")
+        file = file_list[0]
+        
+        file_content = file.GetContentFile()
+        return file_content
     except Exception as e:
-        print(f"Fout opgetreden bij downloaden van bestand: {e}")
+        print(f"Fout opgetreden bij het downloaden: {e}")
         raise
